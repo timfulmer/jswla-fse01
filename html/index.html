@@ -1,0 +1,126 @@
+<html>
+<head>
+  <title>Throws CRUD</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"></script>
+  <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+</head>
+<body>
+  <div id="createThrow">
+    <div>
+      <label for="playerThrow">Player Throw:</label>
+      <select id="playerThrow">
+        <option value="Rock">Rock</option>
+        <option value="Paper">Paper</option>
+        <option value="Scissors">Scissors</option>
+      </select>
+    </div>
+    <div>
+      <label for="opponentThrow">Opponent Throw:</label>
+      <select id="opponentThrow">
+        <option value="Rock">Rock</option>
+        <option value="Paper">Paper</option>
+        <option value="Scissors">Scissors</option>
+      </select>
+    </div>
+    <button onclick="createThrow()">Create</button>
+  </div>
+  <div id="throwsView"></div>
+</body>
+<script id="throw-details" type="text/x-handlebars-template">
+  <div>
+    <div>
+      <b onclick="showThrow('{{thro._id}}')">Throw {{thro._id}}</b>
+      <a href="#" onclick="deleteThrow('{{thro._id}}')">Delete</a>
+    </div>
+    <div id="throw-view-{{thro._id}}" class="edit-throw-{{thro._id}}" style="display:none">
+      <a href="#" onclick="editThrow('{{thro._id}}')">Edit</a>
+      <div>
+        Player Throw: {{thro.playerThrow}}
+      </div>
+      <div>
+        Opponent Throw: {{thro.opponentThrow}}
+      </div>
+    </div>
+    <div id="throw-form-{{thro._id}}" class="edit-throw-{{thro._id}}" style="display:none">
+      <a href="#" onclick="saveThrow('{{thro._id}}')">Save</a>
+      <div>
+        <label for="playerThrow-{{thro._id}}">Player Throw:</label>
+        <select id="playerThrow-{{thro._id}}">
+          <option value="Rock">Rock</option>
+          <option value="Paper">Paper</option>
+          <option value="Scissors">Scissors</option>
+        </select>
+      </div>
+      <div>
+        <label for="opponentThrow-{{thro._id}}">Opponent Throw:</label>
+        <select id="opponentThrow-{{thro._id}}">
+          <option value="Rock">Rock</option>
+          <option value="Paper">Paper</option>
+          <option value="Scissors">Scissors</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</script>
+<script>
+  var source   = $("#throw-details").html();
+  var template = Handlebars.compile(source);
+  function createThrow(){
+    $.ajax({
+      url:'http://localhost:3000/api/throw',
+      method:'POST',
+      dataType:'json',
+      data:{
+        playerThrow:$('#playerThrow').find('option:selected').text(),
+        opponentThrow:$('#opponentThrow').find('option:selected').text()
+      },
+      success:listThrows
+    });
+  }
+  function listThrows(){
+    var throwsView=$('#throwsView');
+    throwsView.empty();
+    $.ajax({
+      url:'http://localhost:3000/api/throw',
+      dataType:'json',
+      success:function listThrowsSuccess(throws){
+        if(throws){
+          throws.forEach(function(thro){
+            throwsView.append(template({thro:thro}));
+            $('#playerThrow-'+thro._id).val(thro.playerThrow);
+            $('#opponentThrow-'+thro._id).val(thro.opponentThrow);
+          });
+        }
+      }
+    });
+  }
+  function showThrow(throwId){
+    $('#throw-view-'+throwId).slideToggle('slow');
+  }
+  function deleteThrow(throwId){
+    $.ajax({
+      url:'http://localhost:3000/api/throw/'+throwId,
+      method:'DELETE',
+      success:listThrows
+    });
+  }
+  function editThrow(throwId){
+    $('.edit-throw-'+throwId).slideToggle('slow');
+  }
+  function saveThrow(throwId){
+    $.ajax({
+      url:'http://localhost:3000/api/throw/'+throwId,
+      method:'PUT',
+      dataType:'json',
+      data:{
+        playerThrow:$('#playerThrow-'+throwId).find('option:selected').text(),
+        opponentThrow:$('#opponentThrow-'+throwId).find('option:selected').text()
+      },
+      success:listThrows
+    });
+  }
+  $(function(){
+    listThrows();
+  })
+</script>
+</html>

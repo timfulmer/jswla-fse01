@@ -5,10 +5,12 @@
 
 const express=require('express'),
   bodyParser=require('body-parser'),
+  cors=require('cors'),
   app=express(),
   db=require('./db');
 
 app.use(bodyParser.urlencoded({extended:false}));
+app.use(cors());
 
 function simpleRequestHandler(message){
   return function(){
@@ -46,8 +48,8 @@ app.post('/api/throw',function createThrow(req,res,next){
     return next();
   })
 },simpleRequestHandler('POST /api/throw'));
-app.put('/api/throw',function updateThrow(req,res,next){
-  db.update(req.body,function(err,data){
+app.put('/api/throw/:throwId',function updateThrow(req,res,next){
+  db.update(req.params.throwId,req.body,function(err,data){
     if(err){
       console.log('Could not update thro:\n%s',err.stack);
       return next(err);
@@ -56,12 +58,13 @@ app.put('/api/throw',function updateThrow(req,res,next){
     return next();
   })
 },simpleRequestHandler('PUT /api/throw'));
-app.delete('/api/throw',function deleteThrow(req,res,next){
-  db.remove(req.body.throwId,function(err){
+app.delete('/api/throw/:throwId',function deleteThrow(req,res,next){
+  db.remove(req.params.throwId,function(err,data){
     if(err){
       console.log('Could not delete thro:\n%s',err.stack);
       return next(err);
     }
+    res.json(data);
     return next();
   })
 },simpleRequestHandler('DEL /api/throw'));

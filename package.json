@@ -2,16 +2,18 @@
   "name": "jswla-fse01",
   "version": "1.0.0",
   "description": "Ful stack sample code",
-  "main": "app.js",
+  "main": "api.js",
   "dependencies": {
     "body-parser": "^1.15.0",
+    "cors": "^2.7.1",
     "express": "^4.13.4",
     "mongodb": "^2.1.7"
   },
   "devDependencies": {},
   "scripts": {
-    "test":"echo \"Error: no test specified\" && exit 1"
-    "start":"node "
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app/api.js",
+    "http": "cd ./html && python -m SimpleHTTPServer"
   },
   "repository": {
     "type": "git",

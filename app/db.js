@@ -16,7 +16,7 @@ function create(thro,callback){
     if(data.insertedCount!==1 || !data.insertedId){
       return callback(new Error('Throw not inserted.'));
     }
-    read(db,data.insertedId,function(err,thro){
+    read(data.insertedId,function(err,thro){
       if(err){
         console.log('Could not read inserted thro:\n%s',err.stack);
         return callback(err);
@@ -27,7 +27,7 @@ function create(thro,callback){
   });
 }
 function read(throwId,callback){
-  db.collection('throws').find({_id:ObjectId(throwId)}).limit(1).next(function(err,data){
+  db.collection('throws').find({_id:throwId}).limit(1).next(function(err,data){
     if(err){
       console.log('Got error finding thro:\n%s',err.stack);
       return callback(err);
@@ -36,8 +36,8 @@ function read(throwId,callback){
     callback(null,data);
   });
 }
-function update(thro,callback){
-  db.collection('throws').findOneAndUpdate({_id:thro._id},thro,function(err,data){
+function update(throwId,thro,callback){
+  db.collection('throws').findOneAndUpdate({_id:ObjectId(throwId)},thro,function(err,data){
     if(err){
       console.log('Got error updating thro:\n%s',err.stack);
       return callback(err);

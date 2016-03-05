@@ -27,7 +27,7 @@ function create(thro,callback){
   });
 }
 function read(throwId,callback){
-  db.collection('throws').find({_id:throwId}).limit(1).next(function(err,data){
+  db.collection('throws').find({_id:ObjectId(throwId)}).limit(1).next(function(err,data){
     if(err){
       console.log('Got error finding thro:\n%s',err.stack);
       return callback(err);

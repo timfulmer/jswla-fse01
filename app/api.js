@@ -10,6 +10,7 @@ const express=require('express'),
   db=require('./db');
 
 app.use(bodyParser.urlencoded({extended:false}));
+app.use(bodyParser.json());
 app.use(cors());
 
 function simpleRequestHandler(message){
@@ -27,9 +28,9 @@ app.get('/api/throw',function listThrows(req,res,next){
     res.json(data);
     return next();
   });
-},simpleRequestHandler('GET /api/throws'));
+},simpleRequestHandler('GET /api/throw'));
 app.get('/api/throw/:throwId',function readThrow(req,res,next){
-  db.read(req.body.throwId,function(err,data){
+  db.read(req.params.throwId,function(err,data){
     if(err){
       console.log('Could not get thro:\n%s',err.stack);
       return next(err);
@@ -54,9 +55,15 @@ app.put('/api/throw/:throwId',function updateThrow(req,res,next){
       console.log('Could not update thro:\n%s',err.stack);
       return next(err);
     }
-    res.json(data);
-    return next();
-  })
+    db.read(req.params.throwId,function(err,data){
+      if(err){
+        console.log('Could not read updated thro:\n%s',err.stack);
+        return next(err);
+      }
+      res.json(data);
+      return next();
+    });
+  });
 },simpleRequestHandler('PUT /api/throw'));
 app.delete('/api/throw/:throwId',function deleteThrow(req,res,next){
   db.remove(req.params.throwId,function(err,data){
